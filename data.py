@@ -3,11 +3,11 @@ import csv
 
 
 class Station:
-    def __init__(self, name, number, line, transfer):
-        # 역명
-        self.name = name
+    def __init__(self, number, name, line, transfer):
         # 역번호
         self.number = number
+        # 역명
+        self.name = name
         # 선명
         self.line = line
         # 환승역 여부

@@ -24,7 +24,7 @@ class Graph:
         if station2.number not in self.connections[station1.number]:
             self.connections[station1.number].append(station2.number)
 
-    def neighbors(self, station_number):
+    def get_neighbors(self, station_number):
         return self.connections.get(station_number, [])
 
 
