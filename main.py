@@ -1,65 +1,78 @@
 # 프로그램 실행, 전체 흐름, 메뉴 관리
-from data import load_stations, find_stations
-from graph import build_graph
-from path import find_routes
-import ui
-
-csv_files = [
-    "Daegu_SubwayLine1_Station.csv",
-    "Daegu_SubwayLine2_Station.csv",
-    "Daegu_SubwayLine3_Station.csv",
-]
+from data import DataManage
+from graph import Graph
+from path import PathFind
+from ui import UI
 
 
-def run(stations, graph):
-    while True:
-        start_station_name = ui.input_start_station()
-        if not start_station_name:
-            ui.print_empty_input()
-            continue
-        end_station_name = ui.input_end_station()
-        if not end_station_name:
-            ui.print_empty_input()
-            continue
-        start_stations = find_stations(stations, start_station_name)
-        end_stations = find_stations(stations, end_station_name)
+class SubWayMain:
+    def __init__(self):
+        self.datamanage = DataManage()
+        self.graph = Graph()
+        self.pathfind = PathFind()
+        self.ui = UI()
+        self.csv_files = [
+            "Daegu_SubwayLine1_Station.csv",
+            "Daegu_SubwayLine2_Station.csv",
+            "Daegu_SubwayLine3_Station.csv",
+        ]
 
-        start_station_numbers = {station.number for station in start_stations}
-        end_station_numbers = {station.number for station in end_stations}
+    def run(self, stations):
+        while True:
+            start_station_name = self.ui.input_start_station()
+            if not start_station_name:
+                self.ui.print_empty_input()
+                continue
 
-        if not start_stations:
-            ui.print_not_found_station()
-            continue
-        if not end_stations:
-            ui.print_not_found_station()
-            continue
-        if start_station_numbers & end_station_numbers:
-            ui.print_same_sation()
-            continue
-        routes = find_routes(graph, start_stations, end_stations)
-        ui.print_routes(routes)
-        break
+            end_station_name = self.ui.input_end_station()
+            if not end_station_name:
+                self.ui.print_empty_input()
+                continue
 
+            start_stations = self.datamanage.find_stations(stations, start_station_name)
+            end_stations = self.datamanage.find_stations(stations, end_station_name)
 
-def main():
-    # csv 파일 읽기
-    stations = load_stations(csv_files)
-    if not stations:
-        print("프로그램을 실행할 수 없습니다.")
-        return
-    # 그래프 생성
-    graph = build_graph(stations)
-    # 메뉴
-    while True:
-        menu = ui.print_menu()
-        if menu == "1":
-            run(stations, graph)
-        elif menu == "2":
-            ui.print_exit()
+            start_station_numbers = {station.number for station in start_stations}
+            end_station_numbers = {station.number for station in end_stations}
+
+            if not start_stations:
+                self.ui.print_not_found_station()
+                continue
+            if not end_stations:
+                self.ui.print_not_found_station()
+                continue
+            if start_station_numbers & end_station_numbers:
+                self.ui.print_same_sation()
+                continue
+            if len(start_stations) > 1:
+                start_stations = [self.ui.select_line(start_stations)]
+            if len(end_stations) > 1:
+                end_stations = [self.ui.select_line(end_stations)]
+
+            routes = self.pathfind.find_routes(self.graph, start_stations, end_stations)
+            self.ui.print_routes(routes)
             break
-        else:
-            ui.print_invalid_menu()
+
+    def main(self):
+        # csv 파일 읽기
+        stations = self.datamanage.load_stations(self.csv_files)
+        if not stations:
+            print("프로그램을 실행할 수 없습니다.")
+            return
+        # 그래프 생성
+        self.graph.build_graph(stations)
+        # 메뉴
+        while True:
+            menu = self.ui.print_menu()
+            if menu == "1":
+                self.run(stations)
+            elif menu == "2":
+                self.ui.print_exit()
+                break
+            else:
+                self.ui.print_invalid_menu()
 
 
 if __name__ == "__main__":
-    main()
+    app = SubWayMain()
+    app.main()

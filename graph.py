@@ -19,49 +19,48 @@ class Graph:
     def add_connection(self, station1, station2):
         self.add_station(station1)
         self.add_station(station2)
-        if station1.number not in self.connections[station2.number]:
-            self.connections[station2.number].append(station1.number)
-        if station2.number not in self.connections[station1.number]:
-            self.connections[station1.number].append(station2.number)
+        num1, num2 = station1.number, station2.number
+        if num1 not in self.connections[num2]:
+            self.connections[num2].append(num1)
+        if num2 not in self.connections[num1]:
+            self.connections[num1].append(num2)
 
     def get_neighbors(self, station_number):
         return self.connections.get(station_number, [])
 
+    def build_graph(self, stations):
 
-def build_graph(stations):
-    graph = Graph()
+        # 모든 역 추가
+        for station in stations.values():
+            self.add_station(station)
 
-    # 모든 역 추가
-    for station in stations.values():
-        graph.add_station(station)
+        # 노선별 분류
+        lines = {}
+        for station in stations.values():
+            if station.line not in lines:
+                lines[station.line] = []
+            lines[station.line].append(station)
 
-    # 노선별 분류
-    lines = {}
-    for station in stations.values():
-        if station.line not in lines:
-            lines[station.line] = []
-        lines[station.line].append(station)
+        # 환승역 필터링 후 이름별 분류
+        transfer_stations = {}
+        for station in stations.values():
+            if station.transfer == "Y":
+                if station.name not in transfer_stations:
+                    transfer_stations[station.name] = []
+                transfer_stations[station.name].append(station)
 
-    # 이름별 분류
-    station_names = {}
-    for station in stations.values():
-        if station.name not in station_names:
-            station_names[station.name] = []
-        station_names[station.name].append(station)
+        # 같은 노선 인접 역 연결
+        for line_stations in lines.values():
+            line_stations.sort(key=lambda station: int(station.number))
 
-    # 같은 노선 인접 역 연결
-    for line_stations in lines.values():
-        line_stations.sort(key=lambda station: int(station.number))
+            for i in range(len(line_stations) - 1):
+                current_station = line_stations[i]
+                next_station = line_stations[i + 1]
+                self.add_connection(current_station, next_station)
 
-        for i in range(len(line_stations) - 1):
-            current_station = line_stations[i]
-            next_station = line_stations[i + 1]
-            graph.add_connection(current_station, next_station)
-
-    # 환승역 연결
-    for samename_stations in station_names.values():
-        if len(samename_stations) > 1:
-            for station1, station2 in combinations(samename_stations, 2):
-                if station1.line != station2.line:
-                    graph.add_connection(station1, station2)
-    return graph
+        # 환승역 연결
+        for samename_stations in transfer_stations.values():
+            if len(samename_stations) > 1:
+                for station1, station2 in combinations(samename_stations, 2):
+                    if station1.line != station2.line:
+                        self.add_connection(station1, station2)

@@ -14,57 +14,66 @@ class Station:
         self.transfer = transfer
 
 
-def load_stations(filesname):
-    stations = {}
+class DataManage:
+    def load_stations(self, filesname):
+        stations = {}
 
-    for filename in filesname:
-        try:
-            with open(filename, "r", encoding="utf-8-sig") as file:
-                reader = csv.DictReader(file)
+        for filename in filesname:
+            try:
+                with open(filename, "r", encoding="utf-8-sig") as file:
+                    reader = csv.DictReader(file)
 
-                columns = ["역번호", "역명", "선명", "환승역여부"]
+                    columns = ["역번호", "역명", "선명", "환승역여부"]
 
-                if reader.fieldnames is None:
-                    print(f"CSV 파일이 없습니다. : {filename}")
-                    return {}
-
-                for column in columns:
-                    if column not in reader.fieldnames:
-                        print(f"CSV 파일 '{filename}'에 '{column}'이 없습니다.")
+                    if reader.fieldnames is None:
+                        print(f"CSV 파일이 없습니다. : {filename}")
                         return {}
 
-                for row in reader:
-                    number = int(row["역번호"])
-                    name = row["역명"].strip()
-                    line = row["선명"].strip()
-                    transfer = row["환승역여부"].strip()
+                    for column in columns:
+                        if column not in reader.fieldnames:
+                            print(f"CSV 파일 '{filename}'에 '{column}'이 없습니다.")
+                            return {}
 
-                    if not number or not name or not line:
-                        continue
+                    for row in reader:
+                        number = int(row["역번호"])
+                        name = row["역명"].strip()
+                        line = row["선명"].strip()
+                        transfer = row["환승역여부"].strip()
 
-                    station = Station(number, name, line, transfer)
+                        if name == "중앙로":
+                            number = 131
 
-                    stations[number] = station
-        except FileNotFoundError:
-            print(f"CSV 파일을 찾을 수 없습니다. : {filename}")
-            return {}
+                        if not number or not name or not line:
+                            continue
 
-        except UnicodeDecodeError:
-            print(f"CSV 파일의 인코딩을 읽을 수 없습니다. : {filename}")
-            return {}
+                        station = Station(number, name, line, transfer)
 
-        except KeyError:
-            print(f"CSV 파일의 데이터 형식이 올바르지 않습니다. : {filename}")
-            return {}
-    return stations
+                        stations[number] = station
 
+            except FileNotFoundError:
+                print(f"CSV 파일을 찾을 수 없습니다. : {filename}")
+                return {}
 
-def find_stations(staions, name):
-    result = []
-    name = name.strip()
+            except UnicodeDecodeError:
+                print(f"CSV 파일의 인코딩을 읽을 수 없습니다. : {filename}")
+                return {}
 
-    for station in staions.values():
-        if station.name == name:
-            result.append(station)
-            continue
-    return result
+            except KeyError:
+                print(f"CSV 파일의 데이터 형식이 올바르지 않습니다. : {filename}")
+                return {}
+        return stations
+
+    def find_stations(self, stations, name):
+        result = []
+        name = name.strip()
+
+        for station in stations.values():
+            if station.name == name:
+                result.append(station)
+                continue
+            # 괄호 앞 역명
+            default_name = station.name.split("(")[0].strip()
+            if default_name == name:
+                result.append(station)
+
+        return result

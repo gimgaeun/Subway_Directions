@@ -2,33 +2,33 @@
 from route import Route
 
 
-def find_routes(graph, start_stations, end_stations):
-    routes = []
-    for start_sation in start_stations:
-        for end_station in end_stations:
-            visited = set()
-            current_path = []
-            dfs(
-                graph,
-                start_sation.number,
-                end_station.number,
-                visited,
-                current_path,
-                routes,
-            )
-    return routes
+class PathFind:
+    def find_routes(self, graph, start_stations, end_stations):
+        routes = []
+        for start_station in start_stations:
+            for end_station in end_stations:
+                visited = []
+                path = []
+                self.dfs(
+                    graph,
+                    start_station.number,
+                    end_station.number,
+                    visited,
+                    path,
+                    routes,
+                )
+        return routes
 
-
-def dfs(graph, current_number, end_number, visited, current_path, routes):
-    visited.add(current_number)
-    current_path.append(graph.stations[current_number])
-    if current_number == end_number:
-        route = Route(current_path.copy())
-        routes.append(route)
-    else:
-        neighbors = graph.get_neighbors(current_number)
-        for next_number in neighbors:
-            if next_number not in visited:
-                dfs(graph, next_number, end_number, visited, current_path, routes)
-    current_path.pop()
-    visited.remove(current_number)
+    def dfs(self, graph, current_station, end_station, visited, path, routes):
+        visited.append(current_station)
+        path.append(graph.stations[current_station])
+        if current_station == end_station:
+            route = Route(path.copy())
+            routes.append(route)
+        else:
+            neighbors = graph.get_neighbors(current_station)
+            for next_station in neighbors:
+                if next_station not in visited:
+                    self.dfs(graph, next_station, end_station, visited, path, routes)
+        path.pop()
+        visited.remove(current_station)
