@@ -14,10 +14,9 @@ class Station:
         self.transfer = transfer
 
 
-class DataManage:
+class Data:
     def load_stations(self, filesname):
         stations = {}
-
         for filename in filesname:
             try:
                 with open(filename, "r", encoding="utf-8-sig") as file:

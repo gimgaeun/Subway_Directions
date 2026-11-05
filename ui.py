@@ -53,6 +53,7 @@ class UI:
     def print_same_sation(self):
         print()
         print("출발역과 도착역은 다른 역이어야 합니다.")
+        print("다시 입력해주세요.")
 
     def print_invalid_menu(self):
         print()

@@ -2,7 +2,7 @@
 from route import Route
 
 
-class PathFind:
+class Path:
     def find_routes(self, graph, start_stations, end_stations):
         routes = []
         for start_station in start_stations:
