@@ -42,7 +42,7 @@ class SubWayMain:
                 self.ui.print_not_found_station()
                 continue
             if start_station_numbers & end_station_numbers:
-                self.ui.print_same_sation()
+                self.ui.print_same_station()
                 continue
             if len(start_stations) > 1:
                 start_stations = [self.ui.select_line(start_stations)]

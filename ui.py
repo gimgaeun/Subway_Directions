@@ -50,7 +50,7 @@ class UI:
         print("입력한 역을 찾을 수 없습니다.")
         print("다시 입력해주세요.")
 
-    def print_same_sation(self):
+    def print_same_station(self):
         print()
         print("출발역과 도착역은 다른 역이어야 합니다.")
         print("다시 입력해주세요.")
